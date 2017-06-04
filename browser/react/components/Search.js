@@ -30,7 +30,7 @@ export default function Search (props) {
                 {
                   resultList.map(page => (
                     <tr key={page.id}>
-                      <td>{ page.image }</td>
+                      <td><img src={ page.image } className="img-thumbnail" /></td>
                       <td>{ page.url }</td>
                     </tr>
                   ))
