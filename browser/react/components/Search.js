@@ -1,41 +1,29 @@
 import React from 'react';
 
 export default function Search (props) {
-  const artistQuery = props.artistQuery;
-  const songQuery = props.songQuery;
+  const searchQuery = props.searchQuery;
   const handleSubmit = props.handleSubmit;
 
-  const artistChange = e => props.setArtist(e.target.value);
-  const songChange = e => props.setSong(e.target.value);
+  const searchChange = e => props.setSearchQuery(e.target.value);
 
   return (
     <div style={{marginTop: '20px'}}>
-      <form onSubmit={(e) => {handleSubmit(e, artistQuery, songQuery)}}>
+      <form onSubmit={(e) => {handleSubmit(e, searchQuery)}}>
         <div className="form-group row">
-          <div className="col-md-6 col-xs-12">
-            <label className="col-xs-2 control-label">Artist</label>
+          <div className="col-md-12 col-xs-12">
+            <label className="col-xs-2 control-label">Search</label>
             <input
               className="form-control"
               type="text"
-              value={artistQuery}
-              placeholder="Enter an artist name"
-              onChange={artistChange}
-            />
-          </div>
-          <div className="col-md-6 col-xs-12">
-            <label className="col-xs-2 control-label">Song</label>
-            <input
-              className="form-control"
-              type="text"
-              value={songQuery}
-              placeholder="Enter a song name"
-              onChange={songChange}
+              value={searchQuery}
+              placeholder="Enter search query"
+              onChange={searchChange}
             />
           </div>
         </div>
         <pre>{'Search above!'}</pre>
         <button type="submit" className="btn btn-success">
-          Search for Lyrics
+          Search!
         </button>
       </form>
     </div>

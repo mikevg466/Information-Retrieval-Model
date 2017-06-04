@@ -6,14 +6,11 @@ export const setPages = pages => ({
   pages
 });
 
-export const search = (terms) => {
+export const booleanSearch = (terms) => {
   terms = terms.replace(/\s+/, '%20');
-  console.log('terms', terms);
-  console.log(`/api/pages?terms=${terms}`);
   return dispatch => {
     axios.get(`/api/pages?terms=${terms}`)
       .then(res => {
-        console.log(res.data);
         dispatch(setPages(res.data));
       })
   };

@@ -3,24 +3,19 @@ import store from '../store';
 import Search from '../components/Search';
 import {connect} from 'react-redux'
 
-import {search} from '../action-creators/search';
+import {booleanSearch} from '../action-creators/search';
 
 class SearchContainer extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { artistQuery: '', songQuery: ''};
+    this.state = { searchQuery: '' };
 
-    this.handleArtistInput = this.handleArtistInput.bind(this);
-    this.handleSongInput = this.handleSongInput.bind(this);
+    this.handleSearchInput = this.handleSearchInput.bind(this);
   }
 
-  handleArtistInput(artist) {
-    this.setState({ artistQuery: artist });
-  }
-
-  handleSongInput(song) {
-    this.setState({ songQuery: song });
+  handleSearchInput(query) {
+    this.setState({ searchQuery: query });
   }
 
   render() {
@@ -28,8 +23,7 @@ class SearchContainer extends Component {
       <Search
         {...this.props}
         {...this.state}
-        setArtist={this.handleArtistInput}
-        setSong={this.handleSongInput}
+        setSearchQuery={this.handleSearchInput}
         handleSubmit={this.props.handleSubmit} />
     );
   }
@@ -38,10 +32,10 @@ class SearchContainer extends Component {
 const mapStateToProps = (state, ownProps) => (state)
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  handleSubmit: (e, artistQ, songQ) => {
+  handleSubmit: (e, searchQ) => {
     e.preventDefault();
-    if (artistQ && songQ) {
-      return dispatch(search(artistQ))
+    if (searchQ) {
+      return dispatch(booleanSearch(searchQ))
     }
   }
 })
