@@ -3,6 +3,7 @@ import React from 'react';
 export default function Search (props) {
   const searchQuery = props.searchQuery;
   const handleSubmit = props.handleSubmit;
+  const resultList = props.search.list;
 
   const searchChange = e => props.setSearchQuery(e.target.value);
 
@@ -21,7 +22,22 @@ export default function Search (props) {
             />
           </div>
         </div>
-        <pre>{'Search above!'}</pre>
+        {
+          !resultList.length ?
+            <pre>{'Search above!'}</pre> :
+            <table className='table'>
+              <tbody>
+                {
+                  resultList.map(page => (
+                    <tr key={page.id}>
+                      <td>{ page.image }</td>
+                      <td>{ page.url }</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+        }
         <button type="submit" className="btn btn-success">
           Search!
         </button>

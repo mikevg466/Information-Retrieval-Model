@@ -25,6 +25,7 @@ class SearchContainer extends Component {
         {...this.state}
         setSearchQuery={this.handleSearchInput}
         handleSubmit={this.props.handleSubmit} />
+      
     );
   }
 }
