@@ -5,8 +5,8 @@
   "main": "server/main.js",
   "scripts": {
     "start": "webpack -w & nodemon --watch server -e js,html server/main.js",
-    "test": "./node_modules/.bin/mocha server/**/*.test.js --reporter spec",
-    "seed": "node ./bin/seed",
+    "test": "mocha",
+    "seed": "node ./bin/seed.js",
     "db-init": "pg-init info_retrieval",
     "postinstall": "npm run db-init"
   },
