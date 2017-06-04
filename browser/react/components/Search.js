@@ -1,15 +1,13 @@
 import React from 'react';
 
-export default function Lyrics (props) {
-  console.log("props.lyrics: ", props.lyrics);
-  const text = props.lyrics.text;
+export default function Search (props) {
   const artistQuery = props.artistQuery;
   const songQuery = props.songQuery;
   const handleSubmit = props.handleSubmit;
 
   const artistChange = e => props.setArtist(e.target.value);
   const songChange = e => props.setSong(e.target.value);
-  // console.log("TEXT: ", text)
+
   return (
     <div style={{marginTop: '20px'}}>
       <form onSubmit={(e) => {handleSubmit(e, artistQuery, songQuery)}}>
@@ -35,7 +33,7 @@ export default function Lyrics (props) {
             />
           </div>
         </div>
-        <pre>{text || 'Search above!'}</pre>
+        <pre>{'Search above!'}</pre>
         <button type="submit" className="btn btn-success">
           Search for Lyrics
         </button>

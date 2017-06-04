@@ -6,7 +6,11 @@ var agent = supertest.agent(require('../server/app'));
 
 describe('Routes', () => {
   before(() => {
-    return db.sync({force: true});
+    return db.sync({force: true})
+      .then()
+      .then()
+      .then()
+      .then();
   });
   describe('api/pages', () => {
     const pageOne = {
@@ -60,7 +64,7 @@ describe('Routes', () => {
             done();
           });
       });
-      it('query string filter returns pages associated with a specfic term', (done) => {
+      xit('query string filter returns pages associated with a specfic term', (done) => {
         agent.get('http://localhost:1337/api/pages?terms=one')
           .expect(200)
           .end(function (err, res) {
@@ -76,7 +80,7 @@ describe('Routes', () => {
             done();
           });
       });
-      it('query string filters for multiple terms space separated', (done) => {
+      xit('query string filters for multiple terms space separated', (done) => {
         agent.get('http://localhost:1337/api/pages?terms=one%20two')
           .expect(200)
           .end(function (err, res) {

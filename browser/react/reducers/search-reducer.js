@@ -1,19 +1,20 @@
 import {
-  SET_LYRICS
+  SET_PAGES
 } from '../constants';
 
-const initialLyricsState = {
-  text: null
+const initialState = {
+  selected: {},
+  list: [],
 };
 
-export default function (state = initialLyricsState, action) {
+export default function (state = initialState, action) {
 
   const newState = Object.assign({}, state);
 
   switch (action.type) {
 
-    case SET_LYRICS:
-      newState.text = action.text;
+    case SET_PAGES:
+      newState.list = action.pages;
       break;
 
     default:

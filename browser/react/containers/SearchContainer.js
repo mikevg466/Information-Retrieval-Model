@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import store from '../store';
-import Lyrics from '../components/Lyrics';
+import Search from '../components/Search';
 import {connect} from 'react-redux'
 
-import {searchLyrics} from '../action-creators/lyrics';
+import {search} from '../action-creators/search';
 
-class LyricsContainer extends Component {
+class SearchContainer extends Component {
 
   constructor(props) {
     super(props);
@@ -25,7 +25,7 @@ class LyricsContainer extends Component {
 
   render() {
     return (
-      <Lyrics
+      <Search
         {...this.props}
         {...this.state}
         setArtist={this.handleArtistInput}
@@ -41,9 +41,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   handleSubmit: (e, artistQ, songQ) => {
     e.preventDefault();
     if (artistQ && songQ) {
-      return dispatch(searchLyrics(artistQ, songQ))
+      return dispatch(search(artistQ))
     }
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(LyricsContainer)
+export default connect(mapStateToProps, mapDispatchToProps)(SearchContainer)

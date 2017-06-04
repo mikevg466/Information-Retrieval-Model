@@ -127,5 +127,66 @@ describe('Model', () => {
           });
       });
     });
+    describe('class methods', () => {
+      const classPageOne = {
+        url: 'http://www.testClass1/url.com',
+        image: 'http://www.testClass1/image.com',
+        terms: ['class', 'Yep'],
+        term_rank: .50,
+        page_rank: .60,
+      };
+      const classPageTwo = {
+        url: 'http://www.testClass2/url.com',
+        image: 'http://www.testClass2/image.com',
+        terms: ['class', 'Nope'],
+        term_rank: .50,
+        page_rank: .60,
+      };
+      const classPageThree = {
+        url: 'http://www.testClass3/url.com',
+        image: 'http://www.testClass3/image.com',
+        terms: ['class', 'Yep'],
+        term_rank: .50,
+        page_rank: .60,
+      };
+      const classPageFour = {
+        url: 'http://www.testClass4/url.com',
+        image: 'http://www.testClass4/image.com',
+        terms: ['I', 'have', 'noClass'],
+        term_rank: .50,
+        page_rank: .60,
+      };
+      before(() => {
+        return Page.create(classPageOne)
+          .then(() => Page.create(classPageTwo))
+          .then(() => Page.create(classPageThree))
+          .then(() => Page.create(classPageFour))
+      });
+      it('findWithTerms class method finds all pages that have specified terms associated with it', () => {
+        return Page.findWithTerms('class Yep')
+          .then(pages => {
+            const pageArr = [
+              Page.build(classPageOne),
+              Page.build(classPageThree)
+            ];
+            expect(pages).to.be.an('array');
+            expect(pages).to.have.a.lengthOf(2);
+            expect(pages.map(page => page.url)).to.deep.equal(pageArr.map(page => page.url));
+          });
+      });
+      it('findAnyTerm class method finds all pages that match any of the given terms', () => {
+        return Page.findAnyTerm('Yep noClass')
+          .then(pages => {
+            const pageArr = [
+              Page.build(classPageOne),
+              Page.build(classPageThree),
+              Page.build(classPageFour)
+            ];
+            expect(pages).to.be.an('array');
+            expect(pages).to.have.a.lengthOf(3);
+            expect(pages.map(page => page.url)).to.deep.equal(pageArr.map(page => page.url));
+          })
+      })
+    })
   });
 });

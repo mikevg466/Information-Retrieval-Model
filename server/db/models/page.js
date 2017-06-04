@@ -30,5 +30,31 @@ module.exports = db.define('page', {
     finalRank: function () {
       return (this.term_rank + this.page_rank) / 2;
     },
-  }
+  },
+  classMethods: {
+    findWithTerms: function(terms) {
+      terms += '';
+      let termArr = terms.split(' ');
+      termArr = termArr.filter(el => el.length > 0);
+      return this.findAll({
+        where: {
+          terms: {
+            $contains: termArr
+          }
+        }
+      });
+    },
+    findAnyTerm: function(terms) {
+      terms += '';
+      let termArr = terms.split(' ');
+      termArr = termArr.filter(el => el.length > 0);
+      return this.findAll({
+        where: {
+          terms: {
+            $overlap: termArr
+          }
+        }
+      });
+    }
+  },
 });
