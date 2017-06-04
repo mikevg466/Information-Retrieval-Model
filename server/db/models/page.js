@@ -23,4 +23,5 @@ module.exports = db.define('page', {
   instanceMethods: {
     getFinalRank: function () {
     },
+  }
 });

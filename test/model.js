@@ -1,20 +1,29 @@
 const db = require('../server/db/db');
 const Page = require('../server/db/models/page');
+const chai = require('chai');
+const chaiProperties = require('chai-properties');
+const chaiThings = require('chai-things');
+chai.use(chaiProperties);
+chai.use(chaiThings);
+const expect = chai.expect;
 
 describe('Model', function(){
 
   //clear the database before all tests
   before(function () {
-    return Page.create({
-      url: 'http://www.test/url.com',
-      image: 'http://www.test/image.com',
-      term_rank: .50,
-      page_rank: .60,
-    });
+    return db.sync({force: true})
+      .then(() => {
+        return Page.create({
+          url: 'http://www.test/url.com',
+          image: 'http://www.test/image.com',
+          term_rank: .50,
+          page_rank: .60,
+        });
+      });
   });
 
   // erase all tasks after each spec
-  afterEach(function(){
+  after(function(){
     return db.sync({force: true});
   });
 
