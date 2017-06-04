@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 export default function Search (props) {
   const searchQuery = props.searchQuery;
@@ -30,8 +31,16 @@ export default function Search (props) {
                 {
                   resultList.map(page => (
                     <tr key={page.id}>
-                      <td><img src={ page.image } className="img-thumbnail" /></td>
-                      <td>{ page.url }</td>
+                      <td>
+                        <a href={ page.url } target="_blank">
+                          <img src={ page.image } className="img-thumbnail" />
+                        </a>
+                      </td>
+                      <td>
+                        <a href={ page.url } target="_blank">
+                          { page.url }
+                        </a>
+                      </td>
                     </tr>
                   ))
                 }

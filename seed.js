@@ -9,7 +9,7 @@ const data = {
     { url: 'sites/halos_fruit.html', image: 'images/halos_fruit.png', terms: ['halo', 'fruit', 'oranges'], term_rank: .50, page_rank: .60, },
     { url: 'sites/angel-halo.html', image: 'images/angel-halo.jpg', terms: ['halo', 'angel'], term_rank: .50, page_rank: .60, },
     { url: 'sites/beyonce-halo.html', image: 'images/beyonce-halo.jpg', terms: ['halo', 'beyonce', 'music'], term_rank: .50, page_rank: .60, },
-    { url: 'sites/halo-deadpool.html', image: 'images/halo-deadpool.jpg', terms: ['halo', 'deadpool', 'fan'], term_rank: .50, page_rank: .60, },
+    { url: 'sites/halo-deadpool.html', image: 'images/halo-deadpool.jpg', terms: ['halo', 'deadpool', 'fan', 'game'], term_rank: .50, page_rank: .60, },
     { url: 'sites/halo-5.html', image: 'images/halo-5.jpg', terms: ['halo', 'game', 'five'], term_rank: .50, page_rank: .60, },
   ]
 };
