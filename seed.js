@@ -5,12 +5,16 @@ const Promise = require('bluebird');
 
 const data = {
   page: [
-    { url: 'sites/halo_1.html', image: 'images/halo_1.jpg', terms: ['halo', 'game', 'one'], term_rank: .50, page_rank: .60, },
-    { url: 'sites/halos_fruit.html', image: 'images/halos_fruit.png', terms: ['halo', 'fruit', 'oranges'], term_rank: .50, page_rank: .60, },
-    { url: 'sites/angel-halo.html', image: 'images/angel-halo.jpg', terms: ['halo', 'angel'], term_rank: .50, page_rank: .60, },
-    { url: 'sites/beyonce-halo.html', image: 'images/beyonce-halo.jpg', terms: ['halo', 'beyonce', 'music'], term_rank: .50, page_rank: .60, },
-    { url: 'sites/halo-deadpool.html', image: 'images/halo-deadpool.jpg', terms: ['halo', 'deadpool', 'fan', 'game'], term_rank: .50, page_rank: .60, },
-    { url: 'sites/halo-5.html', image: 'images/halo-5.jpg', terms: ['halo', 'game', 'five'], term_rank: .50, page_rank: .60, },
+    { url: 'sites/halo_1.html', image: 'images/halo_1.jpg', terms: ['halo', 'game']},
+    { url: 'sites/halos_fruit.html', image: 'images/halos_fruit.png', terms: ['halo', 'fruit', 'oranges']},
+    { url: 'sites/angel-halo.html', image: 'images/angel-halo.jpg', terms: ['halo', 'angel']},
+    { url: 'sites/beyonce-halo.html', image: 'images/beyonce-halo.jpg', terms: ['halo', 'beyonce', 'music']},
+    { url: 'sites/halo-deadpool.html', image: 'images/halo-deadpool.jpg', terms: ['halo', 'game']},
+    { url: 'sites/halo-5.html', image: 'images/halo-5.jpg', terms: ['halo', 'game']},
+    { url: 'sites/mangosteen.html', image: 'images/halo-5.jpg', terms: ['fruit', 'mangosteen']},
+    { url: 'sites/durian.html', image: 'images/halo-5.jpg', terms: ['fruit', 'durian']},
+    { url: 'sites/apple.html', image: 'images/halo-5.jpg', terms: ['fruit', 'apple']},
+    { url: 'sites/halo-5-official.html', image: 'images/halo-5-official.jpg', terms: ['halo', 'game']},
   ]
 };
 
