@@ -11,9 +11,9 @@ const data = {
     { url: 'sites/beyonce-halo.html', image: 'images/beyonce-halo.jpg', terms: ['halo', 'beyonce', 'music']},
     { url: 'sites/halo-deadpool.html', image: 'images/halo-deadpool.jpg', terms: ['halo', 'game']},
     { url: 'sites/halo-5.html', image: 'images/halo-5.jpg', terms: ['halo', 'game']},
-    { url: 'sites/mangosteen.html', image: 'images/halo-5.jpg', terms: ['fruit', 'mangosteen']},
-    { url: 'sites/durian.html', image: 'images/halo-5.jpg', terms: ['fruit', 'durian']},
-    { url: 'sites/apple.html', image: 'images/halo-5.jpg', terms: ['fruit', 'apple']},
+    { url: 'sites/mangosteen.html', image: 'images/mangosteen.jpg', terms: ['fruit', 'mangosteen']},
+    { url: 'sites/durian.html', image: 'images/durian.jpg', terms: ['fruit', 'durian']},
+    { url: 'sites/apple.html', image: 'images/apple.jpg', terms: ['fruit', 'apple']},
     { url: 'sites/halo-5-official.html', image: 'images/halo-5-official.jpg', terms: ['halo', 'game']},
   ]
 };
