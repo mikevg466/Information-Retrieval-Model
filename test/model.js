@@ -25,9 +25,9 @@ describe('Model', () => {
           }),
           Query.create({
             name: 'game halo',
-            terms: [halo, game]
+            terms: ['halo', 'game']
           })
-        ]
+        ])
       });
   });
 
@@ -198,8 +198,8 @@ describe('Model', () => {
     })
   });
 
-  describe('Query', () => {
-    it('definition', () => {
+  xdescribe('Query', () => {
+    describe('definition', () => {
       it('has a name attribute that is a String', () => {
         return Query.findOne()
           .then(query => {
@@ -213,7 +213,7 @@ describe('Model', () => {
           });
       });
     });
-    it('class methods', () => {
+    describe('class methods', () => {
       beforeEach(() => {
         return db.sync({force: true});
       });
@@ -238,7 +238,7 @@ describe('Model', () => {
           });
       });
       it('does not create a new row if another instance contains same terms', () => {
-        return Query.findOrCreateQuery(['b', 'c' 'a', 'test'])
+        return Query.findOrCreateQuery(['b', 'c', 'a', 'test'])
           .then(query => {
             expect(query.name).to.equal('a b c test');
             return Query.findAll();
@@ -258,8 +258,8 @@ describe('Model', () => {
     });
   });
 
-  describe('TermRank', () => {
-    it('definition', () => {
+  xdescribe('TermRank', () => {
+    describe('definition', () => {
       it('has a foreign key for Page', () => {
         return TermRank.findOne()
           .then(term_rank => {
@@ -279,7 +279,7 @@ describe('Model', () => {
           })
       });
     });
-    it('has hooks to handle rank value', () => {
+    describe('hooks to handle rank value', () => {
       it('rank attribute starts as the sum of all matching terms for query and page', () => {
         return Promise.all([
           Page.create({
@@ -289,7 +289,7 @@ describe('Model', () => {
           }),
           Query.findOrCreateQuery(['test', 'rank', 'two'])
         ])
-          .then([page, query] => {
+          .then(([page, query]) => {
             return query.addPage(page)
           })
           .then(term_rank => {
