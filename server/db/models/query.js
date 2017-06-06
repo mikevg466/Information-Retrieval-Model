@@ -13,4 +13,18 @@ module.exports = db.define('query', {
     type: DataTypes.ARRAY(DataTypes.STRING),
     defaultValue: [],
   },
+},{
+  classMethods: {
+    findOrCreateQuery: function(terms){
+      terms.sort();
+      return this.findOrCreate({
+        where: {
+          name: terms.join(' ')
+        },
+        defaults: {
+          terms
+        }
+      });
+    }
+  }
 });
