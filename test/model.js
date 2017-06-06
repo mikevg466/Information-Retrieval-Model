@@ -1,5 +1,7 @@
 const db = require('../server/db/db');
 const Page = require('../server/db/models').Page;
+const Query = require('../server/db/models').Query;
+const TermRank = require('../server/db/models').TermRank;
 const chai = require('chai');
 const chaiProperties = require('chai-properties');
 const chaiThings = require('chai-things');
@@ -13,13 +15,19 @@ describe('Model', () => {
   before( () => {
     return db.sync({force: true})
       .then(() => {
-        return Page.create({
-          url: 'http://www.test/url.com',
-          image: 'http://www.test/image.com',
-          terms: ['one', 'two'],
-          term_rank: .50,
-          page_rank: .60,
-        });
+        return Promise.all([
+          Page.create({
+            url: 'http://www.test/url.com',
+            image: 'http://www.test/image.com',
+            terms: ['one', 'two'],
+            term_rank: .50,
+            page_rank: .60,
+          }),
+          Query.create({
+            name: 'game halo',
+            terms: [halo, game]
+          })
+        ]
       });
   });
 
@@ -28,7 +36,7 @@ describe('Model', () => {
     return db.sync({force: true});
   });
 
-  describe('Pages', () => {
+  describe('Page', () => {
     describe('fields', () => {
       it('has a url field that is a String', () => {
         return Page.findOne()
@@ -188,5 +196,106 @@ describe('Model', () => {
           })
       })
     })
+  });
+
+  describe('Query', () => {
+    it('definition', () => {
+      it('has a name attribute that is a String', () => {
+        return Query.findOne()
+          .then(query => {
+            expect(query.name).to.be.a('string');
+          });
+      });
+      it('has a term attribute that is an array of Strings', () => {
+        return Query.findOne()
+          .then(query => {
+            expect(query.term).to.be.a('string');
+          });
+      });
+    });
+    it('class methods', () => {
+      beforeEach(() => {
+        return db.sync({force: true});
+      });
+      it('has a class method that creates an instance based on array of terms', () => {
+        expect(Query.findOrCreateQuery).to.be.a('function');
+        return Query.findOrCreateQuery(['test', 'this'])
+          .then(query => {
+            expect(query.name).to.equal('test this');
+            expect(query.terms).to.deep.equal(['test', 'this']);
+          });
+      });
+      it('fills in name correctly based on array of terms', () => {
+        return Promise.all([
+          Query.findOrCreateQuery(['test', 'first']),
+          Query.findOrCreateQuery(['b', 'c', 'test', 'a']),
+          Query.findOrCreateQuery(['d', 'e', 'f', 'test'])
+        ])
+          .then(values => {
+            expect(values[0].name).to.equal('first test');
+            expect(values[1].name).to.equal('a b c test');
+            expect(values[2].name).to.equal('d e f test');
+          });
+      });
+      it('does not create a new row if another instance contains same terms', () => {
+        return Query.findOrCreateQuery(['b', 'c' 'a', 'test'])
+          .then(query => {
+            expect(query.name).to.equal('a b c test');
+            return Query.findAll();
+          })
+          .then(queryArr => {
+            expect(queryArr).to.have.a.lengthOf(1);
+            return Query.findOrCreateQuery(['a', 'b', 'c', 'test']);
+          })
+          .then(query => {
+            expect(query.name).to.equal('a b c test');
+            return Query.findAll();
+          })
+          .then(queryArr => {
+            expect(queryArr).to.have.a.lengthOf(1);
+          })
+      });
+    });
+  });
+
+  describe('TermRank', () => {
+    it('definition', () => {
+      it('has a foreign key for Page', () => {
+        return TermRank.findOne()
+          .then(term_rank => {
+            expect(term_rank.page_id).to.be.a('number');
+          });
+      });
+      it('has a foreign key for Query', () => {
+        return TermRank.findOne()
+          .then(term_rank => {
+            expect(term_rank.query_id).to.be.a('number');
+          })
+      });
+      it('has a rank attribute that is a Double', () => {
+        return TermRank.findOne()
+          .then(term_rank => {
+            expect(term_rank.rank).to.be.a('number');
+          })
+      });
+    });
+    it('has hooks to handle rank value', () => {
+      it('rank attribute starts as the sum of all matching terms for query and page', () => {
+        return Promise.all([
+          Page.create({
+            url: 'http://www.testRank/url.com',
+            image: 'http://www.testRank/image.com',
+            terms: ['test', 'rank', 'one', 'two', 'three'],
+          }),
+          Query.findOrCreateQuery(['test', 'rank', 'two'])
+        ])
+          .then([page, query] => {
+            return query.addPage(page)
+          })
+          .then(term_rank => {
+            expect(term_rank.rank).to.equal(3);
+          })
+      });
+    });
   });
 });
