@@ -3,10 +3,14 @@
 const db = require('../db');
 const DataTypes = db.Sequelize;
 
-module.exports = db.define('term_rank', {
+module.exports = db.define('query', {
 
-  rank: {
-    type: DataTypes.DOUBLE(),
-    defaultValue: 0.00,
+  name: {
+    type: DataTypes.STRING(),
+    allowNull: false,
+  },
+  terms: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    defaultValue: [],
   },
 });
