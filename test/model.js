@@ -258,18 +258,31 @@ describe('Model', () => {
     });
   });
 
-  xdescribe('TermRank', () => {
+  describe('TermRank', () => {
+    before(() => {
+      return Promise.all([
+        Page.create({
+          url: 'http://www.testRank/url.com',
+          image: 'http://www.testRank/image.com',
+          terms: ['test', 'rank', 'one', 'two', 'three'],
+        }),
+        Query.findOrCreateQuery(['test', 'rank', 'two'])
+      ])
+        .then(([page, [query]]) => {
+          return query.addPage(page)
+        });
+    });
     describe('definition', () => {
       it('has a foreign key for Page', () => {
         return TermRank.findOne()
           .then(term_rank => {
-            expect(term_rank.page_id).to.be.a('number');
+            expect(term_rank.pageId).to.be.a('number');
           });
       });
       it('has a foreign key for Query', () => {
         return TermRank.findOne()
           .then(term_rank => {
-            expect(term_rank.query_id).to.be.a('number');
+            expect(term_rank.queryId).to.be.a('number');
           })
       });
       it('has a rank attribute that is a Double', () => {
@@ -281,17 +294,7 @@ describe('Model', () => {
     });
     describe('hooks to handle rank value', () => {
       it('rank attribute starts as the sum of all matching terms for query and page', () => {
-        return Promise.all([
-          Page.create({
-            url: 'http://www.testRank/url.com',
-            image: 'http://www.testRank/image.com',
-            terms: ['test', 'rank', 'one', 'two', 'three'],
-          }),
-          Query.findOrCreateQuery(['test', 'rank', 'two'])
-        ])
-          .then(([page, [query]]) => {
-            return query.addPage(page)
-          })
+        return TermRank.findOne()
           .then(term_rank => {
             expect(term_rank.rank).to.equal(3);
           })
