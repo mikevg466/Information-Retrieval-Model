@@ -198,7 +198,7 @@ describe('Model', () => {
     })
   });
 
-  xdescribe('Query', () => {
+  describe('Query', () => {
     describe('definition', () => {
       it('has a name attribute that is a String', () => {
         return Query.findOne()
@@ -209,7 +209,7 @@ describe('Model', () => {
       it('has a term attribute that is an array of Strings', () => {
         return Query.findOne()
           .then(query => {
-            expect(query.term).to.be.a('string');
+            expect(query.terms).to.be.an('array');
           });
       });
     });
@@ -220,7 +220,7 @@ describe('Model', () => {
       it('has a class method that creates an instance based on array of terms', () => {
         expect(Query.findOrCreateQuery).to.be.a('function');
         return Query.findOrCreateQuery(['test', 'this'])
-          .then(query => {
+          .then(([query]) => {
             expect(query.name).to.equal('test this');
             expect(query.terms).to.deep.equal(['test', 'this']);
           });
@@ -232,14 +232,14 @@ describe('Model', () => {
           Query.findOrCreateQuery(['d', 'e', 'f', 'test'])
         ])
           .then(values => {
-            expect(values[0].name).to.equal('first test');
-            expect(values[1].name).to.equal('a b c test');
-            expect(values[2].name).to.equal('d e f test');
+            expect(values[0][0].name).to.equal('first test');
+            expect(values[1][0].name).to.equal('a b c test');
+            expect(values[2][0].name).to.equal('d e f test');
           });
       });
       it('does not create a new row if another instance contains same terms', () => {
         return Query.findOrCreateQuery(['b', 'c', 'a', 'test'])
-          .then(query => {
+          .then(([query]) => {
             expect(query.name).to.equal('a b c test');
             return Query.findAll();
           })
@@ -247,7 +247,7 @@ describe('Model', () => {
             expect(queryArr).to.have.a.lengthOf(1);
             return Query.findOrCreateQuery(['a', 'b', 'c', 'test']);
           })
-          .then(query => {
+          .then(([query]) => {
             expect(query.name).to.equal('a b c test');
             return Query.findAll();
           })
@@ -289,7 +289,7 @@ describe('Model', () => {
           }),
           Query.findOrCreateQuery(['test', 'rank', 'two'])
         ])
-          .then(([page, query]) => {
+          .then(([page, [query]]) => {
             return query.addPage(page)
           })
           .then(term_rank => {
