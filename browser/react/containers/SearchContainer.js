@@ -25,7 +25,7 @@ class SearchContainer extends Component {
         {...this.state}
         setSearchQuery={this.handleSearchInput}
         handleSubmit={this.props.handleSubmit} />
-      
+
     );
   }
 }
@@ -33,10 +33,10 @@ class SearchContainer extends Component {
 const mapStateToProps = (state, ownProps) => (state)
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  handleSubmit: (e, searchQ) => {
+  handleSubmit: (e, searchQ, searchFunc) => {
     e.preventDefault();
     if (searchQ) {
-      return dispatch(booleanSearch(searchQ))
+      return dispatch(searchFunc(searchQ))
     }
   }
 })

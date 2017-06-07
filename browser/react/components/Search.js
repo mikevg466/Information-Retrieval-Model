@@ -5,12 +5,13 @@ export default function Search (props) {
   const searchQuery = props.searchQuery;
   const handleSubmit = props.handleSubmit;
   const resultList = props.search.list;
+  const searchFunc = props.search.searchFunc;
 
   const searchChange = e => props.setSearchQuery(e.target.value);
 
   return (
     <div style={{marginTop: '20px'}}>
-      <form onSubmit={(e) => {handleSubmit(e, searchQuery)}}>
+      <form onSubmit={(e) => {handleSubmit(e, searchQuery, searchFunc)}}>
         <div className="form-group row">
           <div className="col-md-12 col-xs-12">
             <label className="col-xs-2 control-label">Search</label>
