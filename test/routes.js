@@ -87,5 +87,48 @@ describe('Routes', () => {
           });
       });
     });
+    describe('/vectorSearch', () => {
+      it('returns only the pages that contain a term', done => {
+        agent.get('/api/pages/vectorSearch?terms=one')
+          .expect(200)
+          .end(function (err, res){
+            if(err) return done(err);
+            const testArr = [
+              Page.build(pageOne),
+              Page.build(pageThree),
+              Page.build(pageFour)
+            ];
+            expect(res.body).to.be.an('array');
+            expect(res.body).to.have.a.lengthOf(3);
+            expect(res.body.map(page => page.url)).to.deep.equal(testArr.map(page => page.url));
+            done();
+          })
+      })
+      it('returns all pages that contains any of the query terms', done => {
+        agent.get('/api/pages/vectorSearch?terms=one%20two')
+          .expect(200)
+          .end(function (err, res){
+            if(err) return done(err);
+            expect(res.body).to.be.an('array');
+            expect(res.body).to.have.a.lengthOf(4);
+            done();
+          })
+      });
+      it('orders the pages based on the relevance to the query', done => {
+        agent.get('/api/pages/vectorSearch?terms=one%20two')
+          .expect(200)
+          .end(function (err, res){
+            if(err) return done(err)
+            const testArr = [
+              Page.build(pageOne),
+              Page.build(pageThree),
+              Page.build(pageTwo),
+              Page.build(pageFour)
+            ]
+            expect(res.body.map(page => page.url)).to.deep.equal(testArr.map(page => page.url));
+            done();
+          })
+      })
+    });
   });
 });
