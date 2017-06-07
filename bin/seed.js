@@ -1,6 +1,6 @@
 
-const db = require('./server/db/db');
-const Page = require('./server/db/models').Page;
+const db = require('../server/db/db');
+const Page = require('../server/db/models').Page;
 const Promise = require('bluebird');
 
 const data = {
