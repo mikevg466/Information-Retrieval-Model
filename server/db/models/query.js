@@ -1,6 +1,8 @@
 'use strict';
 
 const db = require('../db');
+const Page = require('./page');
+const TermRank = require('./term_rank');
 const DataTypes = db.Sequelize;
 
 module.exports = db.define('query', {
@@ -25,6 +27,16 @@ module.exports = db.define('query', {
           terms
         }
       });
+    },
+  },
+  instanceMethods: {
+    updateRanks: function(){
+      return Page.findAnyTerm(this.name)
+        .then(pages => {
+          return Promise.all(pages.map(page => this.addPage(page)));
+        })
+        .then(() => TermRank.setRankFromQuery(this))
+        .catch(console.error.bind(console));
     }
   }
 });

@@ -269,8 +269,9 @@ describe('Model', () => {
           }),
           Query.findOrCreateQuery(['test', 'rank', 'two'])
         ]))
+        .then()
         .then(([page, [query]]) => {
-          return query.addPage(page);
+          return query.updateRanks();
         });
     });
     describe('definition', () => {
