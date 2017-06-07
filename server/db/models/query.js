@@ -36,6 +36,7 @@ module.exports = db.define('query', {
           return Promise.all(pages.map(page => this.addPage(page)));
         })
         .then(() => TermRank.setRankFromQuery(this))
+        .then(() => this)
         .catch(console.error.bind(console));
     }
   }

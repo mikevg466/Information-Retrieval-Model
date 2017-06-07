@@ -1,6 +1,7 @@
 const express = require('express');
 const router = new express.Router();
 const Page = require('../../db/models/page');
+const Query = require('../../db/models/query');
 const TermRank = require('../../db/models/term_rank');
 
 module.exports = router;
@@ -19,27 +20,31 @@ router.get('/', (req, res, next) => {
   }
 });
 
-router.get('/vectorSearch/:queryId', (req, res, next) => {
+router.get('/vectorSearch', (req, res, next) => {
   if(req.query && Object.keys(req.query).length > 0){
-    Page.findAnyTerm(req.query.terms)
-      .then(pages => {
-        return Promise.all(
-          pages.map(page =>
-            TermRank.findOne({
-              where: {
-                pageId: page.id,
-                queryId: req.params.queryId
-              }
+    Query.findOrCreateQuery(req.query.terms.split(' '))
+      .then(([query]) => query.updateRanks())
+      .then(query =>
+        Page.findAnyTerm(req.query.terms)
+          .then(pages => {
+            return Promise.all(
+              pages.map(page =>
+                TermRank.findOne({
+                  where: {
+                    pageId: page.id,
+                    queryId: query.id
+                  }
+                })
+              ))
+              .then(termRanks => {
+                return termRanks.map((termRank, idx) => ({
+                  page: pages[idx],
+                  rank: termRank.rank
+                }))
+              })
+              .catch(next);
             })
-          ))
-          .then(termRanks => {
-            return termRanks.map((termRank, idx) => ({
-              page: pages[idx],
-              rank: termRank.rank
-            }))
-          })
-          .catch(next);
-      })
+      )
       .then(unsortedPages => {
         return unsortedPages
           .sort((a, b) => b.rank - a.rank)

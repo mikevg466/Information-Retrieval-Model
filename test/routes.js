@@ -41,8 +41,8 @@ describe('Routes', () => {
       .then(() => Page.create(pageTwo))
       .then(() => Page.create(pageThree))
       .then(() => Page.create(pageFour))
-      .then(() => Query.findOrCreateQuery(['one', 'two']))
-      .then(([query]) => query.updateRanks());
+      // .then(() => Query.findOrCreateQuery(['one', 'two']))
+      // .then(([query]) => query.updateRanks());
   });
   after(() => {
     return db.sync({force:true});
@@ -91,17 +91,9 @@ describe('Routes', () => {
           });
       });
     });
-    describe('/vectorSearch/:queryId', () => {
-      let curQuery;
-      before(() => {
-        return Query.findOne()
-          .then(query => curQuery = query);
-      })
-      it('tests model', () => {
-        return TermRank.findAll()
-      })
+    describe('/vectorSearch', () => {
       it('returns only the pages that contain a term', done => {
-        agent.get(`/api/pages/vectorSearch/${curQuery.id}?terms=one`)
+        agent.get(`/api/pages/vectorSearch?terms=one`)
           .expect(200)
           .end(function (err, res){
             if(err) return done(err);
@@ -117,7 +109,7 @@ describe('Routes', () => {
           })
       })
       it('returns all pages that contains any of the query terms', done => {
-        agent.get(`/api/pages/vectorSearch/${curQuery.id}?terms=one%20two`)
+        agent.get(`/api/pages/vectorSearch?terms=one%20two`)
           .expect(200)
           .end(function (err, res){
             if(err) return done(err);
@@ -127,7 +119,7 @@ describe('Routes', () => {
           })
       });
       it('orders the pages based on the relevance to the query', done => {
-        agent.get(`/api/pages/vectorSearch/${curQuery.id}?terms=one%20two`)
+        agent.get(`/api/pages/vectorSearch?terms=one%20two`)
           .expect(200)
           .end(function (err, res){
             if(err) return done(err)
