@@ -5,7 +5,7 @@ export default function Search (props) {
   const searchQuery = props.searchQuery;
   const handleSubmit = props.handleSubmit;
   const resultList = props.search.list;
-  const searchFunc = props.search.searchFunc;
+  const searchFunc = props.searchFunc;
 
   const searchChange = e => props.setSearchQuery(e.target.value);
 
