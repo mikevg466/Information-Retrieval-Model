@@ -259,17 +259,18 @@ describe('Model', () => {
   });
 
   describe('TermRank', () => {
-    before(() => {
-      return Promise.all([
-        Page.create({
-          url: 'http://www.testRank/url.com',
-          image: 'http://www.testRank/image.com',
-          terms: ['test', 'rank', 'one', 'two', 'three'],
-        }),
-        Query.findOrCreateQuery(['test', 'rank', 'two'])
-      ])
+    beforeEach(() => {
+      return db.sync({force: true})
+        .then( () => Promise.all([
+          Page.create({
+            url: 'http://www.testRank/url.com',
+            image: 'http://www.testRank/image.com',
+            terms: ['test', 'rank', 'one', 'two', 'three'],
+          }),
+          Query.findOrCreateQuery(['test', 'rank', 'two'])
+        ]))
         .then(([page, [query]]) => {
-          return query.addPage(page)
+          return query.addPage(page);
         });
     });
     describe('definition', () => {
@@ -292,11 +293,33 @@ describe('Model', () => {
           })
       });
     });
-    describe('hooks to handle rank value', () => {
-      it('rank attribute starts as the sum of all matching terms for query and page', () => {
-        return TermRank.findOne()
-          .then(term_rank => {
-            expect(term_rank.rank).to.equal(3);
+    describe('methods to handle rank value', () => {
+      it('has a instance method that sets rank based on a query', () => {
+        return Query.findOne()
+          .then(query => {
+            return TermRank.findOne()
+              .then(termRank => {
+                expect(termRank.setRank).to.be.a('function');
+                return termRank.setRank(query);
+              })
+              .then(termRank => {
+                expect(termRank.rank).to.equal(3);
+                return TermRank.findOne();
+              })
+              .then(termRank => {
+                expect(termRank.rank).to.equal(3);
+              });
+          });
+      });
+      it('has a class method that sets rank for all instances related to a query', () => {
+        return Query.findOne()
+          .then(query => {
+            expect(TermRank.setRankFromQuery).to.be.a('function');
+            return TermRank.setRankFromQuery(query);
+          })
+          .then(() => TermRank.findOne())
+          .then(termRank => {
+            expect(termRank.rank).to.equal(3);
           })
       });
     });
