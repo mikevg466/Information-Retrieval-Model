@@ -4,6 +4,7 @@ const db = require('../db');
 const DataTypes = db.Sequelize;
 const Query = require('./query');
 const Page = require('./page');
+const Promise = require('bluebird');
 
 module.exports = db.define('term_rank', {
 
@@ -16,26 +17,27 @@ module.exports = db.define('term_rank', {
     setRank: function(query){
       return Page.findById(this.pageId)
         .then(page => {
-          let totalRank = 0.00;
+          let totalRank = 0;
           query.terms.forEach(term => {
             if(page.terms.includes(term)) totalRank++;
           })
-          console.log(totalRank);
-          this.rank = totalRank;
-          console.log(this.rank);
+          return this.update({rank: totalRank});
         })
         .catch(console.error.bind(console));
     }
   },
   classMethods: {
     setRankFromQuery: function(query){
-      return TermRank.findAll({
+      return this.findAll({
         where: {
           queryId: query.id
         }
       })
-        .then(term_rank => {
-          // TODO: add in call to setRank instance method
+        .then(termRankList => {
+          return Promise.map(
+            termRankList,
+            term => term.setRank(query)
+          );
         })
         .catch(console.error.bind(console));
     }
