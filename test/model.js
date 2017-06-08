@@ -324,5 +324,77 @@ describe('Model', () => {
           })
       });
     });
+    describe('methods to handle machine learning of rank value', () => {
+      beforeEach(() => {
+        return Promise.all([
+          Page.create({
+            url: 'http://www.testRank2/url.com',
+            image: 'http://www.testRank2/image.com',
+            terms: ['test', 'rank', 'four', 'five', 'six'],
+          }),
+          Page.create({
+            url: 'http://www.testRank3/url.com',
+            image: 'http://www.testRank3/image.com',
+            terms: ['test', 'rank'],
+          }),
+          Page.create({
+            url: 'http://www.testRank4/url.com',
+            image: 'http://www.testRank4/image.com',
+            terms: ['test', 'rank', 'one', 'two', 'three'],
+          }),
+          Page.create({
+            url: 'http://www.testRank5/url.com',
+            image: 'http://www.testRank5/image.com',
+            terms: ['apples', 'mangos', 'fruits'],
+          })
+        ]);
+      });
+      it('has a TermRank class method that increases rank based on a query, page, and rankIncrease input', () => {
+        return Promise.all([
+          Page.findOne(),
+          Query.findOne()
+        ])
+          .then(([page, query]) => {
+            expect(page.url).to.equal('http://www.testRank/url.com');
+            return TermRank.setRelevance(query, page, 2.5)
+          })
+          .then(termRank => {
+            expect(termRank.rank).to.equal(5.5);
+          })
+      });
+      it('has a query instance method that increases the rank of all pages for each term as the input page', () => {
+        let curQuery, curPage;
+        return Query.findOne()
+          .then(query => {
+            curQuery = query;
+            return query.updateRanks();
+          })
+          .then(() => Page.findAll())
+          .then(pageList => {
+            expect(pageList[0].url).to.equal('http://www.testRank/url.com');
+            curPage = pageList[0];
+            return TermRank.findAll();
+          })
+          .then(termRankList => {
+            const expectedValList = [0, 3, 2, 2, 3];
+            expect(termRankList[0].rank).to.equal(expectedValList[termRankList[0].pageId]);
+            expect(termRankList[1].rank).to.equal(expectedValList[termRankList[1].pageId]);
+            expect(termRankList[2].rank).to.equal(expectedValList[termRankList[2].pageId]);
+            expect(termRankList[3].rank).to.equal(expectedValList[termRankList[3].pageId]);
+            return curQuery.updateRelevance(curPage);
+          })
+          .then(() => TermRank.findAll())
+          .then(termRankList => {
+            const expectedValList = [0, 4, 2.40, 2.40, 4];
+            expect(termRankList[0].pageId).to.equal(curPage.id);
+            expect(termRankList[0].rank).to.equal(expectedValList[termRankList[0].pageId]);
+            expect(termRankList[1].rank).to.equal(expectedValList[termRankList[1].pageId]);
+            expect(termRankList[2].rank).to.equal(expectedValList[termRankList[2].pageId]);
+            expect(termRankList[3].rank).to.equal(expectedValList[termRankList[3].pageId]);
+          })
+
+          // use Number(Math.round(1.005+'e2')+'e-2');
+      });
+    });
   });
 });
