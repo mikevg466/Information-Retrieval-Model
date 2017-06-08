@@ -3,16 +3,17 @@ import store from '../store';
 import Search from '../components/Search';
 import {connect} from 'react-redux'
 
-import {booleanSearch} from '../action-creators/search';
+import { booleanSearch, vectorSearch } from '../action-creators/search';
 
 class SearchContainer extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { searchQuery: '', searchFunc: () => {} };
+    this.state = { searchQuery: '', searchFunc: () => {}, title: '' };
 
     this.handleSearchInput = this.handleSearchInput.bind(this);
     this.setBoolFunc = this.setBoolFunc.bind(this);
+    this.setVectorFunc = this.setVectorFunc.bind(this);
   }
 
   handleSearchInput(query) {
@@ -20,7 +21,11 @@ class SearchContainer extends Component {
   }
 
   setBoolFunc(){
-    this.setState({ searchFunc: booleanSearch });
+    this.setState({ searchFunc: booleanSearch, title: 'Boolean Search' });
+  }
+
+  setVectorFunc(){
+    this.setState({ searchFunc: vectorSearch, title: 'Vector Search' });
   }
 
   render() {
@@ -33,7 +38,10 @@ class SearchContainer extends Component {
               <span className="navbar-link">Boolean Search!</span>
             </p>
           </div>
-          <div className="col-md-4 col-xs-12">
+          <div className="col-md-4 col-xs-12" onClick={this.setVectorFunc}>
+            <p>
+              <span className="navbar-link">Vector Search!</span>
+            </p>
           </div>
           <div className="col-md-4 col-xs-12">
           </div>

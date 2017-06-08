@@ -6,11 +6,13 @@ export default function Search (props) {
   const handleSubmit = props.handleSubmit;
   const resultList = props.search.list;
   const searchFunc = props.searchFunc;
+  const title = props.title;
 
   const searchChange = e => props.setSearchQuery(e.target.value);
 
   return (
     <div style={{marginTop: '20px'}}>
+      {title ? <h2>Selected Search: {title}</h2> : null}
       <form onSubmit={(e) => {handleSubmit(e, searchQuery, searchFunc)}}>
         <div className="form-group row">
           <div className="col-md-12 col-xs-12">
