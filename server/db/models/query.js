@@ -38,6 +38,19 @@ module.exports = db.define('query', {
         .then(() => TermRank.setRankFromQuery(this))
         .then(() => this)
         .catch(console.error.bind(console));
+    },
+    updateRelevance: function(pageInput){
+      return Page.findAnyTerm(pageInput.terms.join(' '))
+        .then(pageList => {
+          const rankIncreaseList = pageList.map(curPage => {
+            let curTermCount = 0;
+            pageInput.terms.forEach(term => {
+              if(curPage.terms.includes(term)) curTermCount++;
+            });
+            return curTermCount ? Number(Math.round((curTermCount / pageInput.terms.length )+'e2')+'e-2') : 0;
+          });
+          return Promise.all(pageList.map((curPage, idx) => TermRank.setRelevance(this, curPage, rankIncreaseList[idx])));
+        })
     }
   }
 });

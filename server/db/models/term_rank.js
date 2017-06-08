@@ -40,6 +40,19 @@ module.exports = db.define('term_rank', {
           );
         })
         .catch(console.error.bind(console));
+    },
+    setRelevance: function(query, page, rankIncrease){
+      return this.findOne({
+        where: {
+          queryId: query.id,
+          pageId: page.id
+        }
+      })
+        .then(termRank => {
+          let oldRank = termRank.rank;
+          return termRank.update({rank: oldRank + rankIncrease})
+        })
+        .catch(console.error.bind(console));
     }
   }
 });
