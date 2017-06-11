@@ -41,8 +41,8 @@ describe('Routes', () => {
       .then(() => Page.create(pageTwo))
       .then(() => Page.create(pageThree))
       .then(() => Page.create(pageFour))
-      // .then(() => Query.findOrCreateQuery(['one', 'two']))
-      // .then(([query]) => query.updateRanks());
+      .then(() => Query.findOrCreateQuery(['one', 'two']))
+      .then(([query]) => query.updateRanks());
   });
   after(() => {
     return db.sync({force:true});
@@ -133,6 +133,85 @@ describe('Routes', () => {
             done();
           })
       })
+    });
+    describe('/relevancy/:queryId', () => {
+      it('PUT will change the order of all pages related to a query', done => {
+        Promise.all([
+          Query.findOne(),
+          Page.findOne({where: pageFour})
+        ])
+          .then(([query, page]) => {
+            agent.put(`/api/pages/relevancy/${query.id}`)
+              .send(page)
+              .expect(201)
+              .end(function(err, res){
+                if(err) return done(err);
+                const testArr = [
+                  null,
+                  pageOne,
+                  pageTwo,
+                  pageThree,
+                  pageFour
+                ]
+                const testRank = [
+                  null,
+                  2.50,
+                  1.50,
+                  2.50,
+                  2
+                ]
+                TermRank.findAll({
+                  where: {
+                    queryId: query.id
+                  }
+                })
+                  .then(termRankList => {
+                    termRankList.sort((a, b) => b.rank - a.rank);
+                    expect(termRankList[0].pageId).to.equal(1);
+                    expect(termRankList[1].pageId).to.equal(3);
+                    expect(termRankList[2].pageId).to.equal(4);
+                    expect(termRankList[3].pageId).to.equal(2);
+
+                    expect(termRankList[0].rank).to.equal(testRank[termRankList[0].pageId]);
+                    expect(termRankList[1].rank).to.equal(testRank[termRankList[1].pageId]);
+                    expect(termRankList[2].rank).to.equal(testRank[termRankList[2].pageId]);
+                    expect(termRankList[3].rank).to.equal(testRank[termRankList[3].pageId]);
+                    done();
+                  })
+              })
+          })
+      });
+      it('PUT changes all pages relevancy based on sent QueryId and Page', done => {
+        Promise.all([
+          Query.findOne(),
+          Page.findOne({where: pageFour})
+        ])
+          .then(([query, page]) => {
+            agent.put(`/api/pages/relevancy/${query.id}`)
+              .send(page)
+              .expect(201)
+              .end(function(err, res){
+                if(err) return done(err);
+                return TermRank.findAll({where: {
+                  queryId: query.id
+                }})
+                  .then(termRankList => {
+                    const testArr = [
+                      0,
+                      3,
+                      2,
+                      3,
+                      3
+                    ];
+                    expect(termRankList[0].rank).to.equal(testArr[termRankList[0].pageId]);
+                    expect(termRankList[1].rank).to.equal(testArr[termRankList[1].pageId]);
+                    expect(termRankList[2].rank).to.equal(testArr[termRankList[2].pageId]);
+                    expect(termRankList[3].rank).to.equal(testArr[termRankList[3].pageId]);
+                    done();
+                  })
+              })
+          })
+      });
     });
   });
 });

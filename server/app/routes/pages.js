@@ -57,4 +57,13 @@ router.get('/vectorSearch', (req, res, next) => {
   } else{
     next(new Error('terms not set in the url query'))
   }
-})
+});
+
+router.put('/relevancy/:queryId', (req, res, next) => {
+  Query.findById(req.params.queryId)
+    .then(query => {
+      return query.updateRelevance(req.body);
+    })
+    .then(() => res.status(201).send('Updated Successfully'))
+    .catch(next);
+});
