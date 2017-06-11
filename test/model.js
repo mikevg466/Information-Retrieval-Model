@@ -67,7 +67,7 @@ describe('Model', () => {
       it('has a page_rank field that is a Double', () => {
         return Page.findOne()
           .then(page => {
-            expect(page.page_rank).to.equal(.60);
+            expect(page.page_rank).to.equal(.25);
           });
       });
     });
@@ -121,20 +121,6 @@ describe('Model', () => {
         expect(defaultTestPage.page_rank).to.equal(0.00);
       });
     })
-    describe('getter methods', () => {
-      it('has a getter method that returns the final_rank based on term_rank and page_rank', () => {
-        return Page.findOne()
-          .then(page => {
-            expect(page.finalRank).to.be.a('number');
-          });
-      });
-      it('final_rank getter returns correct rank based on term_rank and page_rank', () => {
-        return Page.findOne()
-          .then(page => {
-            expect(page.finalRank).to.equal(.55);
-          });
-      });
-    });
     describe('class methods', () => {
       const classPageOne = {
         url: 'http://www.testClass1/url.com',
@@ -194,7 +180,7 @@ describe('Model', () => {
     });
     describe('instance methods', () => {
       it('incrementPageRank instance method updates page_rank field by indicated amount', () => {
-        Page.findOne({where: {url: 'http://www.test/url.com'}})
+        return Page.findOne({where: {url: 'http://www.test/url.com'}})
           .then(page => {
             expect(page.page_rank).to.equal(.25);
             return page.incrementPageRank(.35);

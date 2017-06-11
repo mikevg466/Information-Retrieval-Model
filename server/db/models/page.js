@@ -57,4 +57,9 @@ module.exports = db.define('page', {
       });
     }
   },
+  instanceMethods: {
+    incrementPageRank: function(incVal){
+      return this.update({page_rank: this.page_rank + incVal})
+    }
+  },
 });
