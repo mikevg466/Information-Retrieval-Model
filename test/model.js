@@ -21,7 +21,7 @@ describe('Model', () => {
             image: 'http://www.test/image.com',
             terms: ['one', 'two'],
             term_rank: .50,
-            page_rank: .60,
+            page_rank: .25,
           }),
           Query.create({
             name: 'game halo',
@@ -38,7 +38,7 @@ describe('Model', () => {
 
   describe('Page', () => {
     describe('fields', () => {
-      it('has a url field that is a String', () => {
+      it('has a url fieldhalo that is a String', () => {
         return Page.findOne()
           .then(page => {
             expect(page.url).to.equal('http://www.test/url.com');
@@ -140,29 +140,25 @@ describe('Model', () => {
         url: 'http://www.testClass1/url.com',
         image: 'http://www.testClass1/image.com',
         terms: ['class', 'Yep'],
-        term_rank: .50,
-        page_rank: .60,
+        page_rank: .25,
       };
       const classPageTwo = {
         url: 'http://www.testClass2/url.com',
         image: 'http://www.testClass2/image.com',
         terms: ['class', 'Nope'],
-        term_rank: .50,
-        page_rank: .60,
+        page_rank: .25,
       };
       const classPageThree = {
         url: 'http://www.testClass3/url.com',
         image: 'http://www.testClass3/image.com',
         terms: ['class', 'Yep'],
-        term_rank: .50,
-        page_rank: .60,
+        page_rank: .25,
       };
       const classPageFour = {
         url: 'http://www.testClass4/url.com',
         image: 'http://www.testClass4/image.com',
         terms: ['I', 'have', 'noClass'],
-        term_rank: .50,
-        page_rank: .60,
+        page_rank: .25,
       };
       before(() => {
         return Page.create(classPageOne)
@@ -195,7 +191,19 @@ describe('Model', () => {
             expect(pages.map(page => page.url)).to.deep.equal(pageArr.map(page => page.url));
           })
       })
-    })
+    });
+    describe('instance methods', () => {
+      it('incrementPageRank instance method updates page_rank field by indicated amount', () => {
+        Page.findOne({where: {url: 'http://www.test/url.com'}})
+          .then(page => {
+            expect(page.page_rank).to.equal(.25);
+            return page.incrementPageRank(.35);
+          })
+          .then(page => {
+            expect(page.page_rank).to.equal(.60);
+          })
+      })
+    });
   });
 
   describe('Query', () => {
