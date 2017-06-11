@@ -142,7 +142,7 @@ describe('Routes', () => {
         ])
           .then(([query, page]) => {
             agent.put(`/api/pages/relevancy?terms=one%20two`)
-              .send(page)
+              .send(pageFour)
               .expect(201)
               .end(function(err, res){
                 if(err) return done(err);
@@ -182,19 +182,18 @@ describe('Routes', () => {
           })
       });
       it('PUT changes all pages relevancy based on sent QueryId and Page', done => {
-        Promise.all([
-          Query.findOne(),
-          Page.findOne({where: pageFour})
-        ])
-          .then(([query, page]) => {
+        Query.findOrCreateQuery(['one', 'two'])
+          .then(([query]) => {
             agent.put(`/api/pages/relevancy?terms=one%20two`)
-              .send(page)
+              .send(pageFour)
               .expect(201)
               .end(function(err, res){
                 if(err) return done(err);
-                return TermRank.findAll({where: {
-                  queryId: query.id
-                }})
+                return TermRank.findAll({
+                  where: {
+                    queryId: query.id
+                  }
+                })
                   .then(termRankList => {
                     const testArr = [
                       0,

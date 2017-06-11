@@ -1,10 +1,12 @@
 import {
-  SET_PAGES
+  SET_PAGES,
+  SET_RELEVANCY
 } from '../constants';
 
 const initialState = {
   selected: {},
   list: [],
+  relevancy: false,
 };
 
 export default function (state = initialState, action) {
@@ -15,6 +17,10 @@ export default function (state = initialState, action) {
 
     case SET_PAGES:
       newState.list = action.pages;
+      break;
+
+    case SET_RELEVANCY:
+      newState.relevancy = action.relevancy;
       break;
 
     default:

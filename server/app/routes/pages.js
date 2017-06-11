@@ -23,7 +23,10 @@ router.get('/', (req, res, next) => {
 router.get('/vectorSearch', (req, res, next) => {
   if(req.query && Object.keys(req.query).length > 0){
     Query.findOrCreateQuery(req.query.terms.split(' '))
-      .then(([query]) => query.updateRanks())
+      .then(([query, created]) => {
+        if(created) return query.updateRanks();
+        return query;
+      })
       .then(query =>
         Page.findAnyTerm(req.query.terms)
           .then(pages => {

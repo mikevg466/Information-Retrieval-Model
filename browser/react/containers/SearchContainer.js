@@ -3,7 +3,7 @@ import store from '../store';
 import Search from '../components/Search';
 import {connect} from 'react-redux'
 
-import { booleanSearch, vectorSearch } from '../action-creators/search';
+import { booleanSearch, vectorSearch, setRelevancy, updateRelevancy } from '../action-creators/search';
 
 class SearchContainer extends Component {
 
@@ -22,10 +22,12 @@ class SearchContainer extends Component {
 
   setBoolFunc(){
     this.setState({ searchFunc: booleanSearch, title: 'Boolean Search' });
+    this.props.changeRelevancy(false);
   }
 
   setVectorFunc(){
     this.setState({ searchFunc: vectorSearch, title: 'Vector Search' });
+    this.props.changeRelevancy(false);
   }
 
   render() {
@@ -33,17 +35,22 @@ class SearchContainer extends Component {
       <div>
         <div className="row">
         <nav className="navbar navbar-default">
-          <div className="col-md-4 col-xs-12" onClick={this.setBoolFunc}>
+          <div className="col-md-3 col-xs-12" onClick={this.setBoolFunc}>
             <p>
               <span className="navbar-link">Boolean Search!</span>
             </p>
           </div>
-          <div className="col-md-4 col-xs-12" onClick={this.setVectorFunc}>
+          <div className="col-md-3 col-xs-12" onClick={this.setVectorFunc}>
             <p>
               <span className="navbar-link">Vector Search!</span>
             </p>
           </div>
-          <div className="col-md-4 col-xs-12">
+          <div className="col-md-3 col-xs-12" onClick={() => this.props.changeRelevancy(true)}>
+            <p>
+              <span className="navbar-link">Add Relevancy!</span>
+            </p>
+          </div>
+          <div className="col-md-3 col-xs-12">
           </div>
         </nav>
         </div>
@@ -51,13 +58,14 @@ class SearchContainer extends Component {
           {...this.props}
           {...this.state}
           setSearchQuery={this.handleSearchInput}
-          handleSubmit={this.props.handleSubmit} />
+          handleSubmit={this.props.handleSubmit}
+          updateRelevancy={this.props.updateRelevancy} />
       </div>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => (state)
+const mapStateToProps = (state, ownProps) => (state);
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   handleSubmit: (e, searchQ, searchFunc) => {
@@ -65,7 +73,13 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     if (searchQ) {
       return dispatch(searchFunc(searchQ))
     }
+  },
+  changeRelevancy: (relevancy) => {
+    return dispatch(setRelevancy(relevancy));
+  },
+  updateRelevancy: (searchQ, page) => {
+    return dispatch(updateRelevancy(searchQ, page));
   }
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchContainer)
