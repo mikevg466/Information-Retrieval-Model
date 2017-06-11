@@ -59,9 +59,9 @@ router.get('/vectorSearch', (req, res, next) => {
   }
 });
 
-router.put('/relevancy/:queryId', (req, res, next) => {
-  Query.findById(req.params.queryId)
-    .then(query => {
+router.put('/relevancy', (req, res, next) => {
+  Query.findOrCreateQuery(req.query.terms.split(' '))
+    .then(([query]) => {
       return query.updateRelevance(req.body);
     })
     .then(() => res.status(201).send('Updated Successfully'))

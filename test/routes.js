@@ -141,7 +141,7 @@ describe('Routes', () => {
           Page.findOne({where: pageFour})
         ])
           .then(([query, page]) => {
-            agent.put(`/api/pages/relevancy/${query.id}`)
+            agent.put(`/api/pages/relevancy?terms=one%20two`)
               .send(page)
               .expect(201)
               .end(function(err, res){
@@ -187,7 +187,7 @@ describe('Routes', () => {
           Page.findOne({where: pageFour})
         ])
           .then(([query, page]) => {
-            agent.put(`/api/pages/relevancy/${query.id}`)
+            agent.put(`/api/pages/relevancy?terms=one%20two`)
               .send(page)
               .expect(201)
               .end(function(err, res){
