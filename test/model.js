@@ -10,24 +10,53 @@ chai.use(chaiThings);
 const expect = chai.expect;
 
 describe('Model', () => {
-
+  const pageOne = {
+    url: 'http://www.test/url.com',
+    image: 'http://www.test/image.com',
+    terms: ['one', 'two']
+  };
+  const pageTwo = {
+    url: 'http://www.test2/url.com',
+    image: 'http://www.test2/image.com',
+    terms: ['one', 'two']
+  };
+  const pageThree = {
+    url: 'http://www.test3/url.com',
+    image: 'http://www.test3/image.com',
+    terms: ['one', 'two']
+  };
+  const pageFour = {
+    url: 'http://www.test4/url.com',
+    image: 'http://www.test4/image.com',
+    terms: ['one', 'two']
+  };
   //clear the database before all tests
   before( () => {
     return db.sync({force: true})
       .then(() => {
         return Promise.all([
-          Page.create({
-            url: 'http://www.test/url.com',
-            image: 'http://www.test/image.com',
-            terms: ['one', 'two'],
-            term_rank: .50,
-            page_rank: .25,
-          }),
+          Page.create(pageOne),
+          Page.create(pageTwo),
+          Page.create(pageThree),
+          Page.create(pageFour),
           Query.create({
             name: 'game halo',
             terms: ['halo', 'game']
           })
         ])
+      })
+      .then(([pageOne, pageTwo, pageThree, pageFour, query]) => {
+        pageOne.addLink(pageTwo);
+        pageOne.addLink(pageThree);
+        pageOne.addLink(pageFour);
+
+        pageTwo.addLink(pageOne);
+        pageTwo.addLink(pageThree);
+
+        pageThree.addLink(pageTwo);
+
+        pageFour.addLink(pageTwo);
+        pageFour.addLink(pageOne);
       });
   });
 
@@ -38,20 +67,20 @@ describe('Model', () => {
 
   describe('Page', () => {
     describe('fields', () => {
-      it('has a url fieldhalo that is a String', () => {
-        return Page.findOne()
+      it('has a url field that is a String', () => {
+        return Page.findOne({where: pageOne})
           .then(page => {
             expect(page.url).to.equal('http://www.test/url.com');
           });
       });
       it('has an image field that is a String', () => {
-        return Page.findOne()
+        return Page.findOne({where: pageOne})
           .then(page => {
             expect(page.image).to.equal('http://www.test/image.com');
           });
       });
       it('has a terms field that is an Array of Strings', () => {
-        return Page.findOne()
+        return Page.findOne({where: pageOne})
           .then(page => {
             expect(page.terms).to.be.an('array');
             expect(page.terms[0]).to.be.a('string');
@@ -59,15 +88,15 @@ describe('Model', () => {
           });
       });
       it('has a term_rank field that is a Double', () => {
-        return Page.findOne()
+        return Page.findOne({where: pageOne})
           .then(page => {
-            expect(page.term_rank).to.equal(.50);
+            expect(page.term_rank).to.equal(0.00);
           });
       });
       it('has a page_rank field that is a Double', () => {
-        return Page.findOne()
+        return Page.findOne({where: pageOne})
           .then(page => {
-            expect(page.page_rank).to.equal(.25);
+            expect(page.page_rank).to.equal(0.00);
           });
       });
     });
@@ -122,65 +151,115 @@ describe('Model', () => {
       });
     })
     describe('class methods', () => {
-      const classPageOne = {
-        url: 'http://www.testClass1/url.com',
-        image: 'http://www.testClass1/image.com',
-        terms: ['class', 'Yep'],
-        page_rank: .25,
-      };
-      const classPageTwo = {
-        url: 'http://www.testClass2/url.com',
-        image: 'http://www.testClass2/image.com',
-        terms: ['class', 'Nope'],
-        page_rank: .25,
-      };
-      const classPageThree = {
-        url: 'http://www.testClass3/url.com',
-        image: 'http://www.testClass3/image.com',
-        terms: ['class', 'Yep'],
-        page_rank: .25,
-      };
-      const classPageFour = {
-        url: 'http://www.testClass4/url.com',
-        image: 'http://www.testClass4/image.com',
-        terms: ['I', 'have', 'noClass'],
-        page_rank: .25,
-      };
-      before(() => {
-        return Page.create(classPageOne)
-          .then(() => Page.create(classPageTwo))
-          .then(() => Page.create(classPageThree))
-          .then(() => Page.create(classPageFour))
-      });
-      it('findWithTerms class method finds all pages that have specified terms associated with it', () => {
-        return Page.findWithTerms('class Yep')
-          .then(pages => {
-            const pageArr = [
-              Page.build(classPageOne),
-              Page.build(classPageThree)
-            ];
-            expect(pages).to.be.an('array');
-            expect(pages).to.have.a.lengthOf(2);
-            expect(pages.map(page => page.url)).to.deep.equal(pageArr.map(page => page.url));
-          });
-      });
-      it('findAnyTerm class method finds all pages that match any of the given terms', () => {
-        return Page.findAnyTerm('Yep noClass')
-          .then(pages => {
-            const pageArr = [
-              Page.build(classPageOne),
-              Page.build(classPageThree),
-              Page.build(classPageFour)
-            ];
-            expect(pages).to.be.an('array');
-            expect(pages).to.have.a.lengthOf(3);
-            expect(pages.map(page => page.url)).to.deep.equal(pageArr.map(page => page.url));
+      it('initializePageRank class method updates all page ranks based on total number of pages', () => {
+        return Page.initializePageRank()
+          .then(([pageOne, pageTwo, pageThree, pageFour]) => {
+            expect(pageOne.page_rank).to.equal(.2);
+            expect(pageTwo.page_rank).to.equal(.2);
+            expect(pageThree.page_rank).to.equal(.2);
+            expect(pageFour.page_rank).to.equal(.2);
           })
-      })
+      });
+      it('updatePageRank class method updates all page ranks based on links', () => {
+        return Page.updatePageRank()
+          .then(() => Promise.all([
+            Page.findOne({where: pageOne}),
+            Page.findOne({where: pageTwo}),
+            Page.findOne({where: pageThree}),
+            Page.findOne({where: pageFour})
+          ]))
+          .then(([pageOne, pageTwo, pageThree, pageFour]) => {
+            console.log(pageOne.page_rank);
+            console.log(pageTwo.page_rank);
+            console.log(pageThree.page_rank);
+            console.log(pageFour.page_rank);
+
+            // pageOne start => .2
+              // pageTwo => .2/3 = .06666667 + .2 = .2666667
+              // pageFour => .2/3 = .06666667 + .2 = .2666667
+              // pageOne => pageTwo + pageFour =>
+                // pageTwo => .2666667/2 = .1333333
+                // pageFour => .2666667/2 = .1333333
+            // pageOne final => 4.66666667
+            expect(pageOne.page_rank).to.equal(4.666667);
+
+            // pageTwo start => .266667
+              // pageThree => .266667/2 = .1333333 = .333333333
+              // pageTwo => pageThree + pageFour =>
+                // pageThree => .3333333/1 = .33333333
+                // pageFour => .2666667/2 = .1333333
+            // pageTwo final => .733333333
+            expect(pageTwo.page_rank).to.equal(.7333333);
+
+            // pageThree final => .3333333
+            expect(pageThree.page_rank).to.equal(.3333333);
+
+            // pageFour final => .26666667
+            expect(pageFour.page_rank).to.equal(2.666667);
+          })
+      });
+
+      describe('using before', () => {
+        const classPageOne = {
+          url: 'http://www.testClass1/url.com',
+          image: 'http://www.testClass1/image.com',
+          terms: ['class', 'Yep'],
+          page_rank: .25,
+        };
+        const classPageTwo = {
+          url: 'http://www.testClass2/url.com',
+          image: 'http://www.testClass2/image.com',
+          terms: ['class', 'Nope'],
+          page_rank: .25,
+        };
+        const classPageThree = {
+          url: 'http://www.testClass3/url.com',
+          image: 'http://www.testClass3/image.com',
+          terms: ['class', 'Yep'],
+          page_rank: .25,
+        };
+        const classPageFour = {
+          url: 'http://www.testClass4/url.com',
+          image: 'http://www.testClass4/image.com',
+          terms: ['I', 'have', 'noClass'],
+          page_rank: .25,
+        };
+        before(() => {
+          return Page.create(classPageOne)
+            .then(() => Page.create(classPageTwo))
+            .then(() => Page.create(classPageThree))
+            .then(() => Page.create(classPageFour))
+        });
+        it('findWithTerms class method finds all pages that have specified terms associated with it', () => {
+          return Page.findWithTerms('class Yep')
+            .then(pages => {
+              const pageArr = [
+                Page.build(classPageOne),
+                Page.build(classPageThree)
+              ];
+              expect(pages).to.be.an('array');
+              expect(pages).to.have.a.lengthOf(2);
+              expect(pages.map(page => page.url)).to.deep.equal(pageArr.map(page => page.url));
+            });
+        });
+        it('findAnyTerm class method finds all pages that match any of the given terms', () => {
+          return Page.findAnyTerm('Yep noClass')
+            .then(pages => {
+              const pageArr = [
+                Page.build(classPageOne),
+                Page.build(classPageThree),
+                Page.build(classPageFour)
+              ];
+              expect(pages).to.be.an('array');
+              expect(pages).to.have.a.lengthOf(3);
+              expect(pages.map(page => page.url)).to.deep.equal(pageArr.map(page => page.url));
+            })
+        });
+      });
     });
     describe('instance methods', () => {
       it('incrementPageRank instance method updates page_rank field by indicated amount', () => {
-        return Page.findOne({where: {url: 'http://www.test/url.com'}})
+        return Page.findOne({where: {url: 'http://www.testClass1/url.com'}})
           .then(page => {
             expect(page.page_rank).to.equal(.25);
             return page.incrementPageRank(.35);

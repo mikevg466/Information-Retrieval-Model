@@ -2,8 +2,10 @@
 
 const db = require('../db');
 const DataTypes = db.Sequelize;
+const Promise = require('bluebird');
+const Link = require('./link');
 
-module.exports = db.define('page', {
+const Page = db.define('page', {
 
   url: {
     type: DataTypes.STRING(1e4), // eslint-disable-line new-cap
@@ -55,11 +57,70 @@ module.exports = db.define('page', {
           }
         }
       });
-    }
+    },
+    initializePageRank: function(){
+      return this.findAll()
+        .then(pageList => {
+          const initRank = 1/pageList.length;
+          return Promise.map(
+            pageList,
+            (page) => page.update({page_rank: initRank})
+          );
+        })
+        .catch(console.error.bind(console));
+    },
+    updatePageRank: function(){
+      return this.findAll()
+        .then(pageList => {
+          return Promise.map(
+            pageList,
+            (page) => {
+              return page.getLinks()
+            }
+          )
+            .then(linkListArr => {
+              return Promise.map(
+                linkListArr,
+                (linkList, idx) => {
+                  const incVal = linkList.length ? pageList[idx].page_rank / linkList.length : 0;
+                  return Promise.map(
+                    linkList,
+                    link => link.incrementPageRank(incVal)
+                  )
+                }
+              )
+            })
+        })
+        .catch(console.error.bind(console));
+    },
   },
   instanceMethods: {
     incrementPageRank: function(incVal){
+      console.log(this.id, incVal);
       return this.update({page_rank: this.page_rank + incVal})
-    }
+    },
+    addLink: function(page){
+      return Link.create({
+        pageId: this.id,
+        linkId: page.id
+      })
+      .catch(console.error.bind(console));
+    },
+    getLinks: function(){
+      return Link.findAll({
+        where: {
+          pageId: this.id
+        }
+      })
+        .then(linkList => {
+          return Promise.map(
+            linkList,
+            link => Page.findById(link.linkId)
+          )
+        })
+        .catch(console.error.bind(console));
+    },
   },
 });
+
+module.exports = Page;
