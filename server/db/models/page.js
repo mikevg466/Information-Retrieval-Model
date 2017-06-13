@@ -74,30 +74,59 @@ const Page = db.define('page', {
         .then(pageList => {
           return Promise.map(
             pageList,
-            (page) => {
-              return page.getLinks()
-            }
+            page => page.getLinks()
           )
             .then(linkListArr => {
-              return Promise.map(
+              return Promise.each(
                 linkListArr,
                 (linkList, idx) => {
-                  const incVal = linkList.length ? pageList[idx].page_rank / linkList.length : 0;
+                  const incVal = linkList.length && pageList[idx] ? pageList[idx].page_rank / linkList.length : 0
+                  // console.log(incVal);
                   return Promise.map(
                     linkList,
-                    link => link.incrementPageRank(incVal)
+                    link => {
+                      console.log('start', link.id, link.page_rank);
+                      return link.incrementPageRank(incVal);
+                    }
                   )
                 }
               )
             })
         })
         .catch(console.error.bind(console));
+
+      // return this.findAll()
+      //   .then(pageList => {
+      //     return Promise.map(
+      //       pageList,
+      //       (page) => {
+      //         return page.getLinks()
+      //       }
+      //     )
+      //       .each((linkList, idx) => {
+      //         // return linkListArr.each(
+      //         //   linkListArr,
+      //         //   (linkList, idx) => {
+      //             const incVal = linkList.length ? pageList[idx].page_rank / linkList.length : 0;
+      //             return Promise.map(
+      //               linkList,
+      //               link => {
+      //                 console.log('start:', link.page_rank);
+      //                 link.incrementPageRank(incVal)
+      //               }
+      //             )
+      //           }
+      //         // )
+      //       )
+      //   })
+
     },
   },
   instanceMethods: {
     incrementPageRank: function(incVal){
       console.log(this.id, incVal);
       return this.update({page_rank: this.page_rank + incVal})
+        .then(link => {console.log('end', link.id, link.page_rank)})
     },
     addLink: function(page){
       return Link.create({
